@@ -10,7 +10,7 @@
 
  ### DS1Anime - table is a list of all anime with all related characteristics. ###
  >DS1Anime - Таблица представляет собой список всех аниме со всеми связанными с ними характеристиками
-![image](https://user-images.githubusercontent.com/72844642/202918367-0ee77702-4dd4-4196-8aaf-71711bb6e06d.png)
+![image](https://user-images.githubusercontent.com/72844642/202918509-e5e7317c-f28a-4d71-9e88-aecd1d89469c.png)
 
  ### DS2Anime - analyzed data from the first table only combined into years ###
  >DS1Anime - Таблица представляет собой список всех аниме со всеми связанными с ними характеристиками
