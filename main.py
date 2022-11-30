@@ -5,12 +5,18 @@ import pandas as pd
 import openpyxl
 from collections import Counter
 import json as js
+import sklearn
+from sklearn.ensemble import RandomForestClassifier
+import numpy as np
+from sklearn.tree import export_graphviz
 
 pd.set_option('display.max_columns', None)
 pd.set_option('display.width', None)
 pd.set_option('display.max_colwidth', None)
 pd.set_option('display.max_colwidth', None)
 pd.set_option('display.max_rows', None)
+
+
 
 data_first_table = '500anime_1.json'
 data_second_table = '500anime_2.json'
@@ -177,7 +183,6 @@ print(anime_df)
 def df2_builder():
 
     last_year_rating = sum(anime_rate) / len(anime_rate)
-
     for year in set(anime_year):
         print('---------',year,'---------')
         year_df = anime_df[anime_df['year'] == year]
@@ -339,4 +344,5 @@ anime_year_dict = {
 anime_df_year = pd.DataFrame(anime_year_dict)
 anime_df_year.to_excel("Ds_Anime_2(rename).xlsx")
 
-print(anime_df_year)
+# print(anime_df_year)
+
