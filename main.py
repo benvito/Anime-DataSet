@@ -9,6 +9,7 @@ import sklearn
 from sklearn.ensemble import RandomForestClassifier
 import numpy as np
 from sklearn.tree import export_graphviz
+import m2
 
 pd.set_option('display.max_columns', None)
 pd.set_option('display.width', None)
@@ -345,4 +346,12 @@ anime_df_year = pd.DataFrame(anime_year_dict)
 anime_df_year.to_excel("Ds_Anime_2(rename).xlsx")
 
 # print(anime_df_year)
-
+#m2.classifierForestGump(anime_df,'title','views',nameTable='TESTTT')
+#m2.classifierForestGump(anime_df,'title','votes',nameTable='TESTTT')
+#m2.classifierForestGump(anime_df,'title','type',nameTable='TESTTT')
+# m2.classifierForestGump(anime_df,'title','rating','TESTTT')
+# m2.classifierForestGump(anime_df,'title','genre','TESTTT')
+# m2.classifierForestGump(anime_df,'title','minutes','TESTTT')
+# m2.classifierForestGump(anime_df,'title','series','TESTTT')
+# m2.classifierForestGump(anime_df,'title','source','TESTTT')
+# m2.classifierForestGump(anime_df,'title','studio','TESTTT')
