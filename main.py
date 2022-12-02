@@ -10,6 +10,7 @@ from sklearn.ensemble import RandomForestClassifier
 import numpy as np
 from sklearn.tree import export_graphviz
 import m2
+import os
 
 pd.set_option('display.max_columns', None)
 pd.set_option('display.width', None)
@@ -17,10 +18,18 @@ pd.set_option('display.max_colwidth', None)
 pd.set_option('display.max_colwidth', None)
 pd.set_option('display.max_rows', None)
 
+try:
+    os.remove('logs.txt')
+except:
+    pass
 
+def log(text, url):
+    with open('logs.txt', 'a+') as f:
+        f.write(f'{f.read()}\n[{url}] {text}')
+    print(text)
 
-data_first_table = '500anime_1.json'
-data_second_table = '500anime_2.json'
+data_first_table = 'test.json'
+data_second_table = 'testTWO.json'
 
 def parse50(page):
     url = 'https://myanimelist.net/topanime.php?type=bypopularity&limit=' + str(page)
@@ -30,93 +39,111 @@ def parse50(page):
     for item in titles:
         animeGenreTmp = []
         print(item.text)
-        anime_titles.append(item.text)
         link = item.find("a")
         linkUrl = link.get("href")
         print('url:',linkUrl)
-        anime_links.append(linkUrl)
         reqAnime = requests.get(linkUrl)
         soupAnime = bs(reqAnime.text, "lxml")
-
         rate = soupAnime.find('div', class_= 'fl-l score')
         rate = rate.text
-        anime_rate.append(float(rate))
-        print('rate:',rate)
+        if rate != 'N/A':       
+            try:
+                genre = soupAnime.find_all('span', itemprop='genre')
+                for genreAnime in genre:
+                    animeGenreTmp.append(genreAnime.text)
 
-        genre = soupAnime.find_all('span', itemprop='genre')
-        for genreAnime in genre:
-            animeGenreTmp.append(genreAnime.text)
+                try:
+                    type = soupAnime.find(class_='dark_text',text='Type:').find_next_sibling()
+                    type = type.text
+                except:
+                    type = soupAnime.find(class_='dark_text', text='Type:').next_element.next_element
+                    type = type.text.strip()
+                if type == "ONA" or type == "Movie" or type == "TV" or type == "OVA" or type == "Music" or type == "Special":
 
-        try:
-            type = soupAnime.find(class_='dark_text',text='Type:').find_next_sibling()
-            type = type.text
-            print('type:',type)
-            anime_type.append(type)
-        except:
-            type = soupAnime.find(class_='dark_text', text='Type:').next_element.next_element
-            type = type.text.strip()
-            print('type:', type)
-            anime_type.append(type)
+                    votes = soupAnime.find(itemprop='ratingCount')
+                    
+                    views = soupAnime.find(class_='numbers members').find('strong')
+                    views = views.text.replace(',', '')
+                    
+                    if type != 'TV':
+                        year = soupAnime.find(class_='dark_text', text='Aired:').next_element.next_element
+                        year = year.text
+                        year = int(''.join(filter(str.isdigit, year)))
+                        year = str(year)[-4:]
+                        year = int(year)
+                    else:
+                        year = soupAnime.find(class_='dark_text', text='Premiered:').find_next_sibling()
+                        year = year.text
+                        year = int(''.join(filter(str.isdigit, year)))
+                    
+                    minutes = soupAnime.find(class_='dark_text', text='Duration:').next_element.next_element
+                    if type == 'TV':
+                        minutes = minutes.text
+                        minutes = int(''.join(filter(str.isdigit, minutes)))
+                    else:
+                        minutes = minutes.text
+                        minutes = int(''.join(filter(str.isdigit, minutes)))
+                        minutes = str(minutes)
+                        if len(minutes) > 1:
+                            minutes = int(minutes[0]) * 60 + int(minutes[1:])
+                        else:
+                            minutes = int(minutes[0]) * 60
+                    
+                    series = soupAnime.find(class_='dark_text', text='Episodes:').next_element.next_element
+                    series = series.text.strip()
+                    
+                    source = soupAnime.find(class_='dark_text', text='Source:').next_element.next_element
+                    source = source.text.strip()
+                    
+                    studio = soupAnime.find(class_='dark_text', text='Studios:').find_next_sibling()
+                    studio2 = soupAnime.find(class_='dark_text', text='Studios:').find_next_sibling().find_next_sibling()
 
-        votes = soupAnime.find(itemprop='ratingCount')
-        print('votes:',int(votes.text))
-        anime_votes.append(int(votes.text))
+                    if studio2 is None:
+                        print('studio:', studio.text)
+                        anime_studio.append(studio.text)
+                    else:
+                        print('studio:', studio.text,', ',studio2.text)
+                        anime_studio.append([studio.text, studio2.text])
 
-        views = soupAnime.find(class_='numbers members').find('strong')
-        views = views.text.replace(',', '')
-        print('views:',int(views))
-        anime_views.append(int(views))
+                    anime_titles.append(item.text)
+                    
+                    anime_links.append(linkUrl)
+                    
+                    anime_rate.append(float(rate))
+                    print('rate:',rate)
 
-        if type != 'TV':
-            year = soupAnime.find(class_='dark_text', text='Aired:').next_element.next_element
-            year = year.text
-            year = int(''.join(filter(str.isdigit, year)))
-            year = str(year)[-4:]
-            year = int(year)
+                    print('type:',type)
+                    anime_type.append(type)
+
+                    print('votes:',int(votes.text))
+                    anime_votes.append(int(votes.text))
+
+                    print('views:',int(views))
+                    anime_views.append(int(views))
+
+                    print('year:', year)
+                    anime_year.append(year)
+
+                    print('minutes:', minutes)
+                    anime_minutes.append(minutes)
+
+                    print('series:',series)
+                    anime_series.append(series)
+
+                    print('source:',source)
+                    anime_source.append(source)
+
+                    anime_genre.append(animeGenreTmp)
+                    print('genre:', animeGenreTmp)
+                    print('__________________________________________')
+                else:
+                    log("Skipped (not basic type. Probably: 'Music')", linkUrl)
+            except:
+                log("Skipped .Unknow error", linkUrl)       
         else:
-            year = soupAnime.find(class_='dark_text', text='Premiered:').find_next_sibling()
-            year = year.text
-            year = int(''.join(filter(str.isdigit, year)))
-        print('year:', year)
-        anime_year.append(year)
+            log("Skipped (not enought data)", linkUrl)
+        
 
-        minutes = soupAnime.find(class_='dark_text', text='Duration:').next_element.next_element
-        if type == 'TV':
-            minutes = minutes.text
-            minutes = int(''.join(filter(str.isdigit, minutes)))
-        else:
-            minutes = minutes.text
-            minutes = int(''.join(filter(str.isdigit, minutes)))
-            minutes = str(minutes)
-            if len(minutes) > 1:
-                minutes = int(minutes[0]) * 60 + int(minutes[1:])
-            else:
-                minutes = int(minutes[0]) * 60
-        print('minutes:', minutes)
-        anime_minutes.append(minutes)
-
-        series = soupAnime.find(class_='dark_text', text='Episodes:').next_element.next_element
-        series = series.text.strip()
-        print('series:',series)
-        anime_series.append(series)
-
-        source = soupAnime.find(class_='dark_text', text='Source:').next_element.next_element
-        source = source.text.strip()
-        print('source:',source)
-        anime_source.append(source)
-
-        studio = soupAnime.find(class_='dark_text', text='Studios:').find_next_sibling()
-        studio2 = soupAnime.find(class_='dark_text', text='Studios:').find_next_sibling().find_next_sibling()
-        if studio2 is None:
-            print('studio:', studio.text)
-            anime_studio.append(studio.text)
-        else:
-            print('studio:', studio.text,', ',studio2.text)
-            anime_studio.append([studio.text, studio2.text])
-
-        anime_genre.append(animeGenreTmp)
-        print('genre:', animeGenreTmp)
-        print('__________________________________________')
 
 try:
     with open(data_first_table,'r', encoding='utf8') as json_file:
@@ -131,11 +158,10 @@ except:
     anime_titles, anime_genre, anime_type, anime_rate, anime_votes, anime_views, anime_year, anime_minutes,\
     anime_series, anime_source, anime_studio, anime_links, = [], [], [], [], [], [], [], [], [], [], [], []
 
-    page = 0
-    limit = int(input('Сколько аниме желаете проанализировать?(кратное 50) >>> '))
+    page = 650
     limit = (page//50) * 50
 
-    while page < limit:
+    while page < page+2:
         print('-------------------------------')
         print('page: ', (page / 50) + 1, ' / ', 500 / 50)
         print('-------------------------------')
