@@ -28,8 +28,8 @@ def log(text, url):
         f.write(f'{f.read()}\n[{url}] {text}')
     print(text)
 
-data_first_table = 'test.json'
-data_second_table = 'testTWO.json'
+data_first_table = '3000anime_1.json'
+data_second_table = '3000anime_2.json'
 
 def parse50(page):
     url = 'https://myanimelist.net/topanime.php?type=bypopularity&limit=' + str(page)
@@ -158,12 +158,12 @@ except:
     anime_titles, anime_genre, anime_type, anime_rate, anime_votes, anime_views, anime_year, anime_minutes,\
     anime_series, anime_source, anime_studio, anime_links, = [], [], [], [], [], [], [], [], [], [], [], []
 
-    page = 650
-    limit = (page//50) * 50
+    page = 0
+    limit = 3500
 
-    while page < page+2:
+    while page < 3500:
         print('-------------------------------')
-        print('page: ', (page / 50) + 1, ' / ', 500 / 50)
+        print('page: ', (page / 50) + 1, ' / ', limit / 50)
         print('-------------------------------')
         parse50(page)
         page += 50
@@ -204,7 +204,6 @@ anime_df = pd.DataFrame(anime_dict)
 
 anime_df.to_excel("DF_anime_1(rename).xlsx")
 print(anime_df)
-
 # df2
 
 def df2_builder():
@@ -372,12 +371,12 @@ anime_df_year = pd.DataFrame(anime_year_dict)
 anime_df_year.to_excel("Ds_Anime_2(rename).xlsx")
 
 # print(anime_df_year)
-#m2.classifierForestGump(anime_df,'title','views',nameTable='TESTTT')
-#m2.classifierForestGump(anime_df,'title','votes',nameTable='TESTTT')
-#m2.classifierForestGump(anime_df,'title','type',nameTable='TESTTT')
-# m2.classifierForestGump(anime_df,'title','rating','TESTTT')
-# m2.classifierForestGump(anime_df,'title','genre','TESTTT')
-# m2.classifierForestGump(anime_df,'title','minutes','TESTTT')
-# m2.classifierForestGump(anime_df,'title','series','TESTTT')
-# m2.classifierForestGump(anime_df,'title','source','TESTTT')
-# m2.classifierForestGump(anime_df,'title','studio','TESTTT')
+# m2.classifierForestGump(anime_df,'title','views',nameTable='binary_df_views')
+# m2.classifierForestGump(anime_df,'title','votes',nameTable='binary_df_votes')
+# m2.classifierForestGump(anime_df,'title','type',nameTable='binary_df_type')
+# m2.classifierForestGump(anime_df,'title','rating','binary_df_rating')
+m2.classifierForestGump(anime_df,'title','genre','binary_df_genres')
+m2.classifierForestGump(anime_df,'title','minutes','binary_df_minutes')
+m2.classifierForestGump(anime_df,'title','series','binary_df_series')
+m2.classifierForestGump(anime_df,'title','source','binary_df_source')
+m2.classifierForestGump(anime_df,'title','studio','binary_df_studio')
